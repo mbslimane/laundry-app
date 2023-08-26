@@ -5,6 +5,6 @@ import ProductReducer from "./ProductReducer";
 export default configureStore({
     reducer: {
         cart:CartReducer,
-        product: ProductReducer
+        product: ProductReducer,
     },
 })

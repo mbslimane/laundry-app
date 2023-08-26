@@ -90,6 +90,7 @@ const HomeScreen = () => {
   };
 
   const product = useSelector((state) => state.product.product);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -97,7 +98,7 @@ const HomeScreen = () => {
 
     const fetchProducts = () => {
       services.map((service) => dispatch(getProducts(service)));
-    };
+    }; 
     fetchProducts();
   }, []);
   
