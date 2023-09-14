@@ -21,10 +21,10 @@ export  const productSlice = createSlice({
       
             if (itemPresent.quantity == 1) {
               itemPresent.quantity = 0;
-              const removeItem = state.product.filter(
-                (item) => item.id !== action.payload.id
-              );
-              state.product = removeItem;
+              // const removeItem = state.product.filter(
+              //   (item) => item.id !== action.payload.id
+              // );
+              // state.product = removeItem;
             } else {
               itemPresent.quantity--;
             }

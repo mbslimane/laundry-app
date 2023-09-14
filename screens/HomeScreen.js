@@ -17,10 +17,15 @@ import Services from "../component/Services";
 import Dressitem from "../component/Dressitem";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../ProductReducer";
+import { useNavigation } from "@react-navigation/native";
 
 const HomeScreen = () => {
   const cart = useSelector((state) => state.cart.cart);
-//   console.log(cart);
+  const navigation = useNavigation();
+  const total = cart
+    .map((item) => item.quantity * item.price)
+    .reduce((curr, prev) => curr + prev, 0);
+  //   console.log(cart);
   const [displayCurrentAddress, setDisplayCurrentAddress] = useState(
     "we are loading your location"
   );
@@ -94,15 +99,15 @@ const HomeScreen = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (product.length > 0) return;  
+    if (product.length > 0) return;
 
     const fetchProducts = () => {
       services.map((service) => dispatch(getProducts(service)));
-    }; 
+    };
     fetchProducts();
   }, []);
-  
-//   console.log(product)    
+
+  //   console.log(product)
 
   const services = [
     {
@@ -140,60 +145,111 @@ const HomeScreen = () => {
   ];
 
   return (
-    <ScrollView style={{ backgroundColor: "#f0f0f0", flex: 1, marginTop: 25 }}>
-      {/* Location and Profile */}
-      <View style={{ flexDirection: "row", alignItems: "center", padding: 10 }}>
-        <Ionicons
-          style={{ color: "#fd5c63" }}
-          name="location-outline"
-          size={30}
-          color="black"
-        />
-        <View style={{ paddingLeft: 5 }}>
-          <Text style={{ fontSize: 18, fontWeight: "600" }}>Home</Text>
-          <Text>{displayCurrentAddress}</Text>
-        </View>
-        <Pressable style={{ marginLeft: "auto", marginRight: 7 }}>
-          <Image
-            style={{ height: 40, width: 40, borderRadius: 20 }}
-            source={{
-              uri: "https://lh3.googleusercontent.com/a/AAcHTtdu8KyZKYlmgmHrKzAK7w8Gdznq58A_7fEmurkTTn2LwJg=s288-c-no",
-            }}
-          />
-        </Pressable>
-      </View>
-
-      {/* Search Bar */}
-      <View
+    <>
+      <ScrollView
         style={{
-          margin: 10,
-          //   marginBottom:-10,
-          padding: 10,
-          flexDirection: "row",
-          borderWidth: 0.5,
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderRadius: 5,
-          borderColor: "#C0C0C0",
+          backgroundColor: "#f0f0f0",
+          flex: 1,
+          marginTop: 25,
+          paddingBottom: 30,
         }}
       >
-        <TextInput
-          placeholder="Search for Items "
-          style={{ display: "flex" }}
-        />
-        <AntDesign
-          style={{ display: "flex" }}
-          name="search1"
-          size={20}
-          color="#fd5c63"
-        />
-      </View>
-      <Carousel />
-      <Services />
-      {product.map((item, index) => (
-        <Dressitem item={item} key={index} />
-      ))}
-    </ScrollView>
+        {/* Location and Profile */}
+        <View
+          style={{ flexDirection: "row", alignItems: "center", padding: 10 }}
+        >
+          <Ionicons
+            style={{ color: "#fd5c63" }}
+            name="location-outline"
+            size={30}
+            color="black"
+          />
+          <View style={{ paddingLeft: 5 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600" }}>Home</Text>
+            <Text>{displayCurrentAddress}</Text>
+          </View>
+          <Pressable style={{ marginLeft: "auto", marginRight: 7 }}>
+            <Image
+              style={{ height: 40, width: 40, borderRadius: 20 }}
+              source={{
+                uri: "https://lh3.googleusercontent.com/a/AAcHTtdu8KyZKYlmgmHrKzAK7w8Gdznq58A_7fEmurkTTn2LwJg=s288-c-no",
+              }}
+            />
+          </Pressable>
+        </View>
+
+        {/* Search Bar */}
+        <View
+          style={{
+            margin: 10,
+            //   marginBottom:-10,
+            padding: 10,
+            flexDirection: "row",
+            borderWidth: 0.5,
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderRadius: 5,
+            borderColor: "#C0C0C0",
+          }}
+        >
+          <TextInput
+            placeholder="Search for Items "
+            style={{ display: "flex" }}
+          />
+          <AntDesign
+            style={{ display: "flex" }}
+            name="search1"
+            size={20}
+            color="#fd5c63"
+          />
+        </View>
+        <Carousel />
+        <Services />
+        <View style={{ paddingBottom: 30 }}>
+          {product.map((item, index) => (
+            <Dressitem item={item} key={index} />
+          ))}
+        </View>
+      </ScrollView>
+
+      {total === 0 ? null : (
+        <Pressable
+          style={{
+            backgroundColor: "#088F8F",
+            padding: 10,
+            marginBottom: 40,
+            margin: 15 ,
+            marginTop:0,
+            borderRadius: 7,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <View>
+            <Text style={{ fontSize: 17, fontWeight: "600", color: "white" }}>
+              {cart.length} items | {total} DZD
+            </Text>
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: "400",
+                color: "white",
+                marginVertical: 6,
+              }}
+            >
+              Extra charges might apply
+            </Text>
+          </View>
+
+          <Pressable onPress={() => navigation.navigate("PickUp")} >
+            <Text style={{ fontSize: 17, fontWeight: "600", color: "white" }}>
+              Preceed to pick up
+            </Text>
+          </Pressable>
+        </Pressable>
+      )}
+    </>
   );
 };
 
