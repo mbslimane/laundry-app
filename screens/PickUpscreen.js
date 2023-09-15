@@ -96,7 +96,8 @@ const PickUpscreen = () => {
         selectedTime: selectedTime,
         no_of_days: delivry,
       });
-    }
+    }  
+    
   };
   let startDate = moment(new Date());
   let endDate = startDate.add(1, "week");
