@@ -18,6 +18,8 @@ import Dressitem from "../component/Dressitem";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../ProductReducer";
 import { useNavigation } from "@react-navigation/native";
+import { collection, getDocs } from "firebase/firestore";
+import {db} from "../firebase"
 
 const HomeScreen = () => {
   const cart = useSelector((state) => state.cart.cart);
@@ -29,6 +31,7 @@ const HomeScreen = () => {
   const [displayCurrentAddress, setDisplayCurrentAddress] = useState(
     "we are loading your location"
   );
+  const [items, setItems] = useState([]);
   const [locationServicesEnabled, setLocationServicesEnabled] = useState(false);
   useEffect(() => {
     checkIfLocationEnabled();
@@ -86,7 +89,7 @@ const HomeScreen = () => {
         longitude,
       });
 
-      // console.log (response)
+      
       for (let item of response) {
         let address = `${item.street} ${item.city} `;
         setDisplayCurrentAddress(address);
@@ -101,48 +104,16 @@ const HomeScreen = () => {
   useEffect(() => {
     if (product.length > 0) return;
 
-    const fetchProducts = () => {
-      services.map((service) => dispatch(getProducts(service)));
+    const fetchProducts = async () => {
+      const colRef = collection(db, 'types');
+      const docsSnap = await getDocs(colRef);
+      docsSnap.docs.forEach((doc) => {
+        items.push(doc.data());
+      });
+      items?.map((service) => dispatch(getProducts(service)));
     };
     fetchProducts();
   }, []);
-
-  //   console.log(product)
-
-  const services = [
-    {
-      id: 1,
-      name: "T-shirts",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgwKetFrrEjifk3j56E06IBizAyNt3_RNNXw&usqp=CAU",
-      quantity: 0,
-      price: 200,
-    },
-    {
-      id: 2,
-      name: "Jeans",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPm3VwhCKXJFgSi_q_fATylJqVGp2VdaEeig&usqp=CAU",
-      quantity: 0,
-      price: 200,
-    },
-    {
-      id: 3,
-      name: "Under-Wear",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRE4x4QQuN_ya8P9U7K_VI2nW4u-chu5DJkEOpB8UVJDNxxN3wBI6xBvbLTDa0gIKSdIZg&usqp=CAU",
-      quantity: 0,
-      price: 200,
-    },
-    {
-      id: 4,
-      name: "Dresse",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaCsPTP6Yur2AbNP0gztrzyfjwQX0joO2_xXbhkbg3Y7FMREvmVImDJJup6e5mLa0gDZw&usqp=CAU",
-      quantity: 0,
-      price: 200,
-    },
-  ];
 
   return (
     <>
@@ -168,8 +139,9 @@ const HomeScreen = () => {
             <Text style={{ fontSize: 18, fontWeight: "600" }}>Home</Text>
             <Text>{displayCurrentAddress}</Text>
           </View>
-          <Pressable style={{ marginLeft: "auto", marginRight: 7 }}>
-            <Image
+          <Pressable onPress={()=>navigation.navigate("Profile")} style={{ marginLeft: "auto", marginRight: 7 }}>
+            <Image 
+              
               style={{ height: 40, width: 40, borderRadius: 20 }}
               source={{
                 uri: "https://lh3.googleusercontent.com/a/AAcHTtdu8KyZKYlmgmHrKzAK7w8Gdznq58A_7fEmurkTTn2LwJg=s288-c-no",
@@ -218,8 +190,8 @@ const HomeScreen = () => {
             backgroundColor: "#088F8F",
             padding: 10,
             marginBottom: 40,
-            margin: 15 ,
-            marginTop:0,
+            margin: 15,
+            marginTop: 0,
             borderRadius: 7,
             flexDirection: "row",
             alignItems: "center",
@@ -242,7 +214,7 @@ const HomeScreen = () => {
             </Text>
           </View>
 
-          <Pressable onPress={() => navigation.navigate("PickUp")} >
+          <Pressable onPress={() => navigation.navigate("PickUp")}>
             <Text style={{ fontSize: 17, fontWeight: "600", color: "white" }}>
               Preceed to pick up
             </Text>

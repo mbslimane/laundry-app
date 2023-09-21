@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Pressable,
@@ -12,37 +13,47 @@ import React, { useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+import { useEffect } from "react";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation();
 
-  const users = [
-    {
-      id: 1,
-      email: "sola@gmail.com",
-      password: "sola",
-    },
-  ];
-
-  const checkUser = () => {
-    users.map((user, id) => {
-      if (user.email === email && user.password === password) {
-        navigation.replace("Home");
-      } else {
-        Alert.alert("Invalid Cordonates ", "Check your email And password ", [
-          {
-            text: "OK",
-            onPress: () => console.log("Ok pressed"),
-          },
-        ]);
+  useEffect(()=>{
+    setLoading(true)
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+      if(!authUser){
+        setLoading(false)
+      }
+      if(authUser){
+        navigation.navigate("Home")
+        // setLoading(false)
       }
     });
+    return unsubscribe;
+  },[])
+
+  const login = () => {
+    signInWithEmailAndPassword(auth,email,password).then((userCredential) =>{
+      console.log("...............",userCredential)
+      const user = userCredential.user;
+      console.log("user details", user)
+    })
   };
+
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "center", margin: 10 }}>
+      {loading? (
+        <View style={{justifyContent:"center", alignItems:"center",flexDirection:"row"}}>
+          <ActivityIndicator size={50} color={"red"}/>
+          <Text style={{fontSize:18, fontWeight:"bold",paddingLeft:20}}>Loading, please wait</Text>
+        </View>
+      ):(
       <KeyboardAvoidingView>
         <View
           style={{ padding: 20, backgroundColor: "white", borderRadius: 15 }}
@@ -116,7 +127,7 @@ const LoginScreen = () => {
             }}
           >
             <Text
-              onPress={() => checkUser()}
+              onPress={() => login()}
               style={{
                 backgroundColor: "#318ce7",
                 paddingVertical: 20,
@@ -145,7 +156,9 @@ const LoginScreen = () => {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
+      )}
     </SafeAreaView>
+    
   );
 };
 

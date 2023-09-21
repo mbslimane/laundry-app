@@ -13,6 +13,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 const RegisterScreen = () => {
   const [email, setEmail] = useState("");
@@ -38,9 +41,18 @@ const RegisterScreen = () => {
               onPress: () => console.log("Ok pressed"),
             },
           ]
-    }else{
-        navigation.replace("Home")
     }
+
+    createUserWithEmailAndPassword(auth, email, password).then((userCredential) =>{
+      console.log('user credential..............................', userCredential);
+      const user = userCredential._tokenResponse.email;
+      const myUserUId = auth.currentUser.uid;
+
+      setDoc(doc(db,"users",`${myUserUId}`),{
+        email:user,
+        phone:phoneNumber,
+      })
+    })
   }
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "center", margin: 10 }}>
@@ -184,7 +196,7 @@ const RegisterScreen = () => {
           </Pressable>
 
           <Pressable
-            onPress={() => navigation.navigate("Register")}
+            onPress={() => navigation.goBack()}
             style={{
               alignItems: "center",
               justifyContent: "center",

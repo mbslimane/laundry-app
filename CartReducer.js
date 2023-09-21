@@ -25,9 +25,11 @@ export const CardSlice = createSlice({
       state.cart = removeItem;
     },
 
-    incrementQuantity:(state, action) => {
-        const itemPresent = state.cart.find((item) => item.id === action.payload.id)
-        itemPresent.quantity++;
+    incrementQuantity: (state, action) => {
+      const itemPresent = state.cart.find(
+        (item) => item.id === action.payload.id
+      );
+      itemPresent.quantity++;
     },
 
     decrementQuantity: (state, action) => {
@@ -45,10 +47,18 @@ export const CardSlice = createSlice({
         itemPresent.quantity--;
       }
     },
+    cleanCart: (state) => {
+      state.cart =[];
+    },
   },
 });
 
-
-export const {addToCart, removeFromCart, incrementQuantity, decrementQuantity} =CardSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  incrementQuantity,
+  decrementQuantity,
+  cleanCart,
+} = CardSlice.actions;
 
 export default CardSlice.reducer;
